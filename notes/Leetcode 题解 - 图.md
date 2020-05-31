@@ -5,6 +5,7 @@
     * [1. 课程安排的合法性](#1-课程安排的合法性)
     * [2. 课程安排的顺序](#2-课程安排的顺序)
     * [3. 确定任意两节课之间是否有前后关系](#3-确认任意两节课是否有前后关系)
+    * [4. 统计有向图中需要翻转的边使之全可以指向0](#4-统计有向图中需要翻转的边使之全可以指向0)
 * [并查集](#并查集)
     * [1. 冗余连接](#1-冗余连接)
 <!-- GFM-TOC -->
@@ -288,6 +289,65 @@ class Solution {
         for(Node node : root.adj){
             dfs(node);
         }
+    }
+}
+```
+
+## 4. 统计有向图中需要翻转的边使之全可以指向0
+
+1466\. Reorder Routes to Make All Paths Lead to the City Zero
+
+[Leetcode](https://leetcode.com/contest/weekly-contest-191/problems/reorder-routes-to-make-all-paths-lead-to-the-city-zero/)
+
+```html
+Input: n = 6, connections = [[0,1],[1,3],[2,3],[4,0],[4,5]]
+Output: 3
+Explanation: Change the direction of edges show in red such that each node can reach the node 0 (capital).
+```
+
+Node and Edge
+
+```java
+class Edge{
+    Node a;
+    Node b;
+    Node other(Node x){
+        return a == x ? b : a;
+    }
+}
+class Node{
+    List<Edge> adj = new ArrayList();
+}
+class Solution {
+    public int minReorder(int n, int[][] connections) {
+        Node[] nodes = new Node[n];
+        for(int i = 0; i < n; i++){
+            nodes[i] = new Node();
+        }
+        for(int[] c : connections){
+            Edge e = new Edge();
+            e.a = nodes[c[0]];
+            e.b = nodes[c[1]];
+            e.a.adj.add(e);
+            e.b.adj.add(e);
+        }
+        
+        return dfs(nodes[0], null);
+    }
+    
+    public int dfs(Node root, Node p){
+        int ans = 0;
+        for(Edge e : root.adj){
+            Node node = e.other(root);
+            if(node == p){
+                continue;
+            }
+            if(node == e.b){
+                ans++;
+            }
+            ans += dfs(node, root);
+        }
+        return ans;
     }
 }
 ```
