@@ -13,6 +13,7 @@
 * [11. 实现整数的加法](#11-实现整数的加法)
 * [12. 字符串数组最大乘积](#12-字符串数组最大乘积)
 * [13. 统计从 0 \~ n 每个数的二进制表示中 1 的个数](#13-统计从-0-\~-n-每个数的二进制表示中-1-的个数)
+* [14. 字符串上滑动长度为k的mask](# 14-滑动长度为k的mask)
 <!-- GFM-TOC -->
 
 
@@ -499,7 +500,40 @@ public int[] countBits(int num) {
 }
 ```
 
+# 14. 滑动长度为k的mask
 
+1461\. Check If a String Contains All Binary Codes of Size K
+
+[Leetcode](https://leetcode.com/contest/biweekly-contest-27/problems/check-if-a-string-contains-all-binary-codes-of-size-k/)
+
+mask = (1<<k)-1, bits copy the k length of s, exist[mask+1] store each binary code appear or not.
+
+```java
+class Solution {
+    public boolean hasAllCodes(String s, int k) {
+        int mask = (1 << k) - 1;
+        boolean[] exist = new boolean[mask + 1];
+        int bits = 0;
+        for(int i = 0; i < k - 1 && i < s.length(); i++){
+            bits <<= 1;
+            bits &= mask;
+            bits |= (s.charAt(i) - '0');
+        }
+        for(int i = k - 1; i < s.length(); i++){
+            bits <<= 1;
+            bits &= mask;
+            bits |= (s.charAt(i) - '0');
+            exist[bits] = true;
+        }
+        for(boolean x : exist){
+            if(!x){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
 
 
 
