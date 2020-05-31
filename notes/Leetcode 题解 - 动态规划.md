@@ -8,6 +8,7 @@
 * [矩阵路径](#矩阵路径)
     * [1. 矩阵的最小路径和](#1-矩阵的最小路径和)
     * [2. 矩阵的总路径数](#2-矩阵的总路径数)
+    * [3. 两个出发点找收获和最大路径](#3-两个出发点找收获和最大的路径)
 * [数组区间](#数组区间)
     * [1. 数组区间和](#1-数组区间和)
     * [2. 数组中等差递增子区间的个数](#2-数组中等差递增子区间的个数)
@@ -238,6 +239,74 @@ public int uniquePaths(int m, int n) {
         ret = ret * (S - D + i) / i;
     }
     return (int) ret;
+}
+```
+## 3. 两个出发点找收获和最大的路径
+
+1463\. Cherry Pickup II
+
+[Leetcode](https://leetcode.com/contest/biweekly-contest-27/problems/cherry-pickup-ii/)
+
+Return the maximum number of cherries collection using both robots  by following the rules below:
+
+- From a cell (i,j), robots can move to cell (i+1, j-1) , (i+1, j) or (i+1, j+1).
+- When any robot is passing through a cell, It picks it up all cherries, and the cell becomes an empty cell (0).
+- When both robots stay on the same cell, only one of them takes the cherries.
+- Both robots cannot move outside of the grid at any moment.
+- Both robots should reach the bottom row in the grid.
+
+- 2 <= rows, cols <= 70
+- 0 <= grid[i][j] <= 100 
+
+```html
+Input: grid = [[3,1,1],[2,5,1],[1,5,5],[2,1,1]]
+Output: 24
+Explanation: Path of robot #1 and #2 are described in color green and blue respectively.
+Cherries taken by Robot #1, (3 + 2 + 5 + 2) = 12.
+Cherries taken by Robot #2, (1 + 5 + 5 + 1) = 12.
+Total of cherries: 12 + 12 = 24.
+```
+
+```java
+class Solution {
+    int[][] grid;
+    int[][][] dp;
+    int n;
+    int m;
+    
+    int inf = (int)1e9;
+    public int dp(int i, int j, int k){
+        if(i >= n){
+            return 0;
+        }
+        if(j < 0 || j >= k || k >= m){
+            return -inf;
+        }
+        if(dp[i][j][k] == -1){
+            dp[i][j][k] = 0;
+            for(int dx = -1; dx <= 1; dx++){
+                for(int dy = -1; dy <= 1; dy++){
+                    dp[i][j][k] = Math.max(dp[i][j][k], dp(i + 1, j + dx, k + dy));
+                }
+            }
+            dp[i][j][k] += grid[i][j] + grid[i][k];
+        }
+        return dp[i][j][k];
+    }
+    
+    public int cherryPickup(int[][] grid) {
+        this.grid = grid;
+        n = grid.length;
+        m = grid[0].length;
+        dp = new int[n][m][m];
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                Arrays.fill(dp[i][j], -1);
+            }
+        }
+        int ans = dp(0, 0, m - 1);
+        return ans;
+    }
 }
 ```
 
