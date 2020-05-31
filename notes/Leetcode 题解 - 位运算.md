@@ -506,6 +506,12 @@ public int[] countBits(int num) {
 
 [Leetcode](https://leetcode.com/contest/biweekly-contest-27/problems/check-if-a-string-contains-all-binary-codes-of-size-k/)
 
+```html
+Input: s = "00110110", k = 2
+Output: true
+Explanation: The binary codes of length 2 are "00", "01", "10" and "11". They can be all found as substrings at indicies 0, 1, 3 and 2 respectively.
+```
+
 mask = (1<<k)-1, bits copy the k length of s, exist[mask+1] store each binary code appear or not.
 
 ```java
