@@ -4,6 +4,7 @@
 * [拓扑排序](#拓扑排序)
     * [1. 课程安排的合法性](#1-课程安排的合法性)
     * [2. 课程安排的顺序](#2-课程安排的顺序)
+    * [3. 确定任意两节课之间是否有前后关系](#3-确认任意两节课是否有前后关系)
 * [并查集](#并查集)
     * [1. 冗余连接](#1-冗余连接)
 <!-- GFM-TOC -->
@@ -194,6 +195,103 @@ private boolean hasCycle(boolean[] globalMarked, boolean[] localMarked, List<Int
     return false;
 }
 ```
+
+## 3. 确认任意两节课是否有前后关系
+
+1462\. Course Schedule IV
+
+[Leetcode](https://leetcode.com/contest/biweekly-contest-27/problems/course-schedule-iv/)
+
+```html
+Input: n = 5, prerequisites = [[0,1],[1,2],[2,3],[3,4]], queries = [[0,4],[4,0],[1,3],[3,0]]
+Output: [true,false,true,false]
+```
+buile two graph, Map<Integer , Set\<Integer\>\> store pre, dfs
+
+```java
+class Solution {
+	private Map<Integer , Set<Integer>> graph = new HashMap<>();
+	private Map<Integer , Set<Integer>> visMap = new HashMap<>();
+	
+    public List<Boolean> checkIfPrerequisite(int n, int[][] prerequisites, int[][] queries) {
+    	for (int i = 0;i < n;i ++) {
+    		graph.put(i , new HashSet<>());
+    	}
+    	for (int[] edge : prerequisites) {
+    		graph.get(edge[0]).add(edge[1]);
+    	}
+    	for (int i = 0;i < n;i ++) {
+    		if (!visMap.containsKey(i)) {
+    			dfs(i);
+    		}
+    	}
+    	List<Boolean> ans = new ArrayList<>();
+    	for (int[] query : queries) {
+    		if (visMap.getOrDefault(query[0] , new HashSet<>()).contains(query[1])) {
+    			ans.add(true);
+    		} else {
+    			ans.add(false);
+    		}
+    	}
+    	return ans;
+    }
+    
+    private Set<Integer> dfs(int current) {
+    	if (visMap.containsKey(current)) {
+    		return visMap.get(current);
+    	}
+    	Set<Integer> set = new HashSet<>();
+    	set.add(current);
+    	for (int next : graph.get(current)) {
+    		Set<Integer> result = dfs(next);
+    		set.addAll(result);
+    	}
+    	visMap.put(current , set);
+    	return set;
+    }
+}
+```
+
+another storing graph way by Node
+
+```java
+class Node{
+    List<Node> adj = new ArrayList();
+    boolean visited;
+}
+
+class Solution {
+    public List<Boolean> checkIfPrerequisite(int n, int[][] prerequisites, int[][] queries) {
+        Node[] nodes = new Node[n];
+        for(int i = 0; i < n; i++){
+            nodes[i] = new Node();
+        }
+        for(int[] e : prerequisites){
+            nodes[e[0]].adj.add(nodes[e[1]]);
+        }
+        List<Boolean> ans = new ArrayList(queries.length);
+        for(int[] q : queries){
+            for(Node node : nodes){
+                node.visited = false;
+            }
+            dfs(nodes[q[0]]);
+            ans.add(nodes[q[1]].visited);
+        }
+        return ans;
+    }
+    
+    public void dfs(Node root){
+        if(root.visited){
+            return;
+        }
+        root.visited = true;
+        for(Node node : root.adj){
+            dfs(node);
+        }
+    }
+}
+```
+
 
 # 并查集
 
